@@ -5,7 +5,7 @@ Main application entry point with clean styling and modular components.
 
 import dash
 from dash import dcc, html
-from dash.dependencies import Input, Output
+from dash.dependencies import Input, Output, State
 import plotly.graph_objects as go
 from datetime import datetime
  
@@ -13,9 +13,13 @@ from datetime import datetime
 from utils.data_loader import DataLoader
 from utils.formatters import Formatters
 from components.layout import DashboardLayout
+from components.comparison import YearComparison
 
 # Initialize data loader
 data_loader = DataLoader("agri_analysis_punjab_clean.csv")
+
+# Initialize comparison component
+year_comparison = YearComparison(data_loader)
 
 # Create the app
 app = dash.Dash(__name__, 
@@ -110,6 +114,56 @@ def update_dashboard(season, year):
         trend_fig,
         Formatters.get_trend_title(season),
     )
+
+@app.callback(
+    Output("year-comparison-dd", "options"),
+    [Input("season-dd", "value")]
+)
+def update_comparison_year_options(season):
+    """Update year options for comparison based on season selection."""
+    years = data_loader.get_years()
+    # Remove "All" option for comparison
+    return [{"label": str(year), "value": str(year)} for year in years if year != "All"]
+
+@app.callback(
+    [
+        Output("area-comparison-fig", "figure"),
+        Output("burned-comparison-fig", "figure"),
+        Output("trend-comparison-fig", "figure")
+    ],
+    [Input("season-dd", "value"), Input("year-comparison-dd", "value")]
+)
+def update_comparison_charts(season, selected_years):
+    """Update comparison charts based on season and selected years."""
+    try:
+        if not selected_years:
+            selected_years = []
+        
+        comparison_figures = year_comparison.create_comparison_figures(season, selected_years)
+        
+        return (
+            comparison_figures['area_comparison'],
+            comparison_figures['burned_comparison'],
+            comparison_figures['trend_comparison']
+        )
+    except Exception as e:
+        print(f"Error in comparison callback: {e}")
+        # Return empty figures on error
+        empty_fig = go.Figure()
+        empty_fig.update_layout(
+            paper_bgcolor="rgba(0,0,0,0)",
+            plot_bgcolor="#0B1730",
+            font_color="#E5EEFF",
+            xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
+            yaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
+            annotations=[dict(
+                text="Error loading comparison data",
+                xref="paper", yref="paper",
+                x=0.5, y=0.5, showarrow=False,
+                font=dict(size=16, color="#94A3B8")
+            )]
+        )
+        return empty_fig, empty_fig, empty_fig
 
 if __name__ == "__main__":
     app.run(debug=True, port=8050)

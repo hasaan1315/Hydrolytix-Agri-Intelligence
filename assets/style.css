@@ -422,6 +422,163 @@ html {
     max-height: 360px;
 }
 
+/* ==========================================
+   COMPARISON LAYOUT
+   ========================================== */
+.grid-comparison {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 2rem;
+    padding: 2rem;
+    max-width: 1600px;
+    margin: 0 auto;
+    min-height: 100vh;
+}
+
+.comparison-card {
+    grid-column: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.comparison-controls {
+    background: rgba(51, 65, 85, 0.3);
+    padding: 1.5rem;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.comparison-charts {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.comparison-charts .js-plotly-plot {
+    border-radius: 12px;
+    overflow: hidden;
+    background: rgba(30, 41, 59, 0.6);
+}
+
+/* ==========================================
+   MAIN TABS STYLING - ENHANCED
+   ========================================== */
+.dash-tabs {
+    margin: 0 2rem;
+    background: rgba(30, 41, 59, 0.9);
+    border-radius: 16px;
+    padding: 0.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(20px);
+}
+
+.dash-tab {
+    padding: 1rem 1.5rem;
+    border-bottom: 2px solid transparent;
+    color: var(--text-secondary);
+    font-weight: 600;
+    transition: all 0.3s ease;
+    background: transparent;
+    border: none;
+    border-radius: 12px;
+    margin: 0 0.25rem;
+}
+
+.dash-tab--selected {
+    color: var(--accent-color);
+    border-bottom-color: var(--accent-color);
+    background: rgba(96, 165, 250, 0.2);
+    box-shadow: 0 4px 16px rgba(96, 165, 250, 0.25);
+    transform: translateY(-1px);
+}
+
+.dash-tab:hover {
+    color: var(--text-primary);
+    background: rgba(96, 165, 250, 0.15);
+    transform: translateY(-1px);
+}
+
+/* Override default Dash tab styles */
+.Tab {
+    background: transparent !important;
+    border: none !important;
+    color: var(--text-secondary) !important;
+}
+
+.Tab--selected {
+    background: rgba(96, 165, 250, 0.2) !important;
+    color: var(--accent-color) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 4px 16px rgba(96, 165, 250, 0.25) !important;
+}
+
+.Tabs {
+    background: rgba(30, 41, 59, 0.9) !important;
+    border-radius: 16px !important;
+    padding: 0.5rem !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2) !important;
+    backdrop-filter: blur(20px) !important;
+}
+
+/* ==========================================
+   RESPONSIVE DESIGN FOR COMPARISON
+   ========================================== */
+@media (max-width: 1200px) {
+    .grid-comparison {
+        grid-template-columns: 280px 1fr;
+        gap: 1.5rem;
+        padding: 1.5rem;
+    }
+}
+
+@media (max-width: 1024px) {
+    .grid-comparison {
+        grid-template-columns: 1fr;
+    }
+    
+    .comparison-card {
+        grid-column: 1;
+    }
+}
+
+@media (max-width: 768px) {
+    .grid-comparison {
+        padding: 1rem;
+        gap: 1rem;
+    }
+    
+    .comparison-controls {
+        padding: 1rem;
+    }
+    
+    .dash-tabs {
+        margin: 0 1rem;
+    }
+    
+    .dash-tab {
+        padding: 0.75rem 1rem;
+        font-size: 0.875rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .grid-comparison {
+        padding: 0.75rem;
+    }
+    
+    .comparison-controls {
+        padding: 0.75rem;
+    }
+    
+    .dash-tab {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.8125rem;
+    }
+}
+
 /* Enhanced Plotly Chart Styling */
 .js-plotly-plot .plotly .modebar {
     background: rgba(51, 65, 85, 0.8) !important;
