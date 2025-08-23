@@ -32,12 +32,42 @@ app = dash.Dash(__name__,
                     "/assets/base.css",
                     "/assets/components.css",
                     "/assets/layout.css"
-                ])
+                ],
+                suppress_callback_exceptions=True)
 app.title = "Hydrolytix • Agri Intelligence"
 
 # Create layout
 dashboard_layout = DashboardLayout(data_loader)
 app.layout = dashboard_layout.create_layout()
+
+# Tab switching callback
+@app.callback(
+    [Output("tab-content", "children"),
+     Output("overview-tab", "className"),
+     Output("comparison-tab", "className"),
+     Output("forecasting-tab", "className")],
+    [Input("overview-tab", "n_clicks"),
+     Input("comparison-tab", "n_clicks"),
+     Input("forecasting-tab", "n_clicks")],
+    prevent_initial_call=True
+)
+def switch_tab(overview_clicks, comparison_clicks, forecasting_clicks):
+    """Switch between tabs based on button clicks."""
+    ctx = dash.callback_context
+    
+    if not ctx.triggered:
+        return dashboard_layout._create_overview_layout(), "custom-tab active", "custom-tab", "custom-tab"
+    
+    button_id = ctx.triggered[0]['prop_id'].split('.')[0]
+    
+    if button_id == "overview-tab":
+        return dashboard_layout._create_overview_layout(), "custom-tab active", "custom-tab", "custom-tab"
+    elif button_id == "comparison-tab":
+        return dashboard_layout._create_comparison_layout(), "custom-tab", "custom-tab active", "custom-tab"
+    elif button_id == "forecasting-tab":
+        return dashboard_layout._create_forecasting_layout(), "custom-tab", "custom-tab", "custom-tab active"
+    
+    return dashboard_layout._create_overview_layout(), "custom-tab active", "custom-tab", "custom-tab"
 
 # Callbacks
 @app.callback(

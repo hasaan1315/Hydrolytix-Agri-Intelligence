@@ -34,27 +34,31 @@ class DashboardLayout:
             children=[
                 create_navbar(),
                 
-                dcc.Tabs(
-                    id="main-tabs",
-                    value="overview",
-                    children=[
-                        dcc.Tab(
-                            label="Overview",
-                            value="overview",
-                            children=self._create_overview_layout()
+                # Custom tabs implementation for better styling control
+                html.Div([
+                    html.Div([
+                        html.Button(
+                            "Overview",
+                            id="overview-tab",
+                            className="custom-tab active",
+                            n_clicks=0
                         ),
-                        dcc.Tab(
-                            label="Year Comparison", 
-                            value="comparison",
-                            children=self._create_comparison_layout()
+                        html.Button(
+                            "Year Comparison",
+                            id="comparison-tab",
+                            className="custom-tab",
+                            n_clicks=0
                         ),
-                        dcc.Tab(
-                            label="Forecasting",
-                            value="forecasting",
-                            children=self._create_forecasting_layout()
+                        html.Button(
+                            "Forecasting",
+                            id="forecasting-tab",
+                            className="custom-tab",
+                            n_clicks=0
                         )
-                    ]
-                )
+                    ], className="custom-tabs-container"),
+                    
+                    html.Div(self._create_overview_layout(), id="tab-content")
+                ])
             ],
         )
     

@@ -68,7 +68,7 @@
     font-size: 0.75rem;
     color: var(--text-muted);
     font-weight: 400;
-    padding: 0.5rem 1rem;
+    padding: 极.5rem 1rem;
     background: rgba(96, 165, 250, 0.1);
     border-radius: 20px;
     border: 1px solid rgba(96, 165, 250, 0.2);
@@ -91,7 +91,7 @@
     padding: 2rem;
     box-shadow: 
         0 8px 32px rgba(0, 0, 0, 0.1),
-        0 4px 8px rgba(0, 0, 0, 0.05);
+        0 4极 8px rgba(0, 0, 0, 0.05);
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
@@ -110,7 +110,7 @@
 .card:hover {
     transform: translateY(-6px) scale(1.01);
     box-shadow: 
-        0 20px 40px rgba(0, 0, 0, 0.2),
+        0 20px 40px rgba(0, 极, 0, 0.2),
         0 8px 16px rgba(0, 0, 0, 0.1);
     border-color: rgba(96, 165, 250, 0.3);
 }
@@ -184,14 +184,14 @@
 
 .dropdown .Select-control .Select-value {
     color: var(--text-primary) !important;
-    font-weight: 500;
+    font-weight: 极.5;
 }
 
 .dropdown .Select-control .Select-input {
     color: var(--text-primary) !important;
 }
 
-.dropdown .Select-control .Select-placeholder {
+.dropdown .极elect-control .Select-placeholder {
     color: var(--text-muted) !important;
 }
 
@@ -200,7 +200,7 @@
     backdrop-filter: blur(20px);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 12px;
-    box-shadow: 0 20px 40px rgba(0, 0, 极, 0.3);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
 }
 
 .dropdown .Select-option {
@@ -304,7 +304,7 @@
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    letter-spacing: -极.02em;
+    letter-spacing: -0.02em;
 }
 
 .kpi-value.accent {
@@ -340,7 +340,7 @@
     max-height: 450px;
     display: flex;
     flex-direction: column;
-    background: rgba(30, 41, 59, 0.6);
+    background: rgba(30, 41, 59, 极.6);
 }
 
 .donut-card .card-title,
@@ -509,7 +509,7 @@
     margin: 0.5rem 0;
 }
 
-.slider .rc-slider-track {
+.slider .极c-slider-track {
     background: var(--gradient-accent);
 }
 
@@ -537,7 +537,7 @@
     background: rgba(51, 65, 85, 0.3);
     padding: 1.5rem;
     border-radius: 12px;
-    border: 1极 solid rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .comparison-charts {
@@ -553,9 +553,11 @@
 }
 
 /* ==========================================
-   MAIN TABS STYLING - ENHANCED
+   CUSTOM TABS STYLING
    ========================================== */
-.dash-tabs {
+.custom-tabs-container {
+    display: flex;
+    justify-content: center;
     margin: 0 2rem;
     background: rgba(30, 41, 59, 0.9);
     border-radius: 16px;
@@ -565,65 +567,29 @@
     backdrop-filter: blur(20px);
 }
 
-.dash-tab {
+.custom-tab {
     padding: 1rem 1.5rem;
-    border-bottom: 2px solid transparent;
-    color: var(--text-secondary);
-    font-weight: 600;
-    transition: all 0.3s ease;
-    background: transparent;
     border: none;
+    background: transparent;
+    color: #FFFFFF; /* White text for maximum visibility */
+    font-weight: 600;
+    font-size: 0.9rem;
     border-radius: 12px;
     margin: 0 0.25rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
 }
 
-.dash-tab--selected {
-    color: var(--accent-color);
-    border-bottom-color: var(--accent-color);
-    background: rgba(96, 165, 250, 0.2);
-    box-shadow: 0 4px 16px rgba(96, 165, 250, 0.25);
-    transform: translateY(-1px);
-}
-
-.dash-tab:hover {
-    color: var(--text-primary);
+.custom-tab:hover {
     background: rgba(96, 165, 250, 0.15);
     transform: translateY(-1px);
 }
 
-/* Override default Dash tab styles */
-.Tab {
-    background: transparent !important;
-    border: none !important;
-    color: #FFFFFF !important; /* Pure white for maximum visibility */
-    opacity: 0.9 !important; /* Increased opacity for better visibility */
-    transition: all 0.3s ease !important;
-    font-weight: 600 !important;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
-}
-
-.Tab--selected {
-    background: rgba(96, 165, 250, 0.3) !important; /* More visible background */
-    color: #FFFFFF !important; /* White text for selected tab */
-    border-radius: 12px !important;
-    box-shadow: 0 4px 20px rgba(96, 165, 250, 0.4) !important; /* More prominent shadow */
-    opacity: 1 !important;
-    font-weight: 700 !important;
-}
-
-.Tab:hover {
-    opacity: 1 !important;
-    background: rgba(96, 165, 250, 0.2) !important;
-    color: #FFFFFF !important;
-}
-
-.Tabs {
-    background: rgba(30, 41, 59, 0.9) !important;
-    border-radius: 16px !important;
-    padding: 0.5rem !important;
-    border: 1px solid rgba(255, 255, 255, 0.1) !important;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2) !important;
-    backdrop-filter: blur(20px) !important;
+.custom-tab.active {
+    background: rgba(96, 165, 250, 0.3);
+    color: #FFFFFF;
+    box-shadow: 0 4px 16px rgba(96, 165, 250, 0.25);
+    transform: translateY(-1px);
 }
 
 /* Enhanced Plotly Chart Styling */
