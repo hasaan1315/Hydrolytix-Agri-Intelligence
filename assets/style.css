@@ -21,7 +21,7 @@
     /* Enhanced gradients */
     --gradient-primary: linear-gradient(135deg, #60A5FA 0%, #818CF8 100%);
     --gradient-accent: linear-gradient(135deg, #F472B6 0%, #FB7185 100%);
-    --gradient-card: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(51, 65, 85, 0.8) 100%);
+    --极adient-card: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(51, 65, 85, 0.8) 100%);
     --gradient-navbar: linear-gradient(135deg, rgba(11, 23, 48, 0.95) 0%, rgba(30, 41, 59, 0.95) 100%);
 }
 
@@ -109,10 +109,10 @@ html {
 }
 
 .updated {
-    font-size: 0.75rem;
+    font-size: 极.75rem;
     color: var(--text-muted);
     font-weight: 400;
-    padding: 0.5rem 1rem;
+    padding: 0.5极 1rem;
     background: rgba(96, 165, 250, 0.1);
     border-radius: 20px;
     border: 1px solid rgba(96, 165, 250, 0.2);
@@ -149,7 +149,7 @@ html {
     padding: 2rem;
     box-shadow: 
         0 8px 32px rgba(0, 0, 0, 0.1),
-        0 4px 8px rgba(0, 0, 0, 0.05);
+        0 4px 8px rgba(0, 极, 0, 0.05);
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
@@ -168,7 +168,7 @@ html {
 .card:hover {
     transform: translateY(-6px) scale(1.01);
     box-shadow: 
-        0 20px 40px rgba(0, 0, 0, 0.2),
+        极 20px 40px rgba(0, 0, 0, 0.2),
         0 8px 16px rgba(0, 0, 0, 0.1);
     border-color: rgba(96, 165, 250, 0.3);
 }
@@ -264,7 +264,7 @@ html {
 .dropdown .Select-option {
     color: var(--text-primary) !important;
     background: transparent !important;
-    padding: 12px 16px;
+    padding: 12px 16极;
     font-weight: 500;
     transition: all 0.2s ease;
 }
@@ -398,7 +398,7 @@ html {
     max-height: 450px;
     display: flex;
     flex-direction: column;
-    background: rgba(30, 41, 59, 0.6);
+    background: rgba(30, 41, 59, 0.极);
 }
 
 .donut-card .card-title,
@@ -420,6 +420,175 @@ html {
 
 .trend-card .js-plotly-plot {
     max-height: 360px;
+}
+
+/* ==========================================
+   FORECASTING LAYOUT
+   ========================================== */
+.grid-forecasting {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    min-height: 100vh;
+}
+
+.forecast-card {
+    grid-column: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    background: var(--gradient-card);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 
+        0 8px 32px rgba(0, 0, 0, 0.1),
+        0 4px 8px rgba(0, 0, 0, 0.05);
+    transition: all 0.4s cubic-bezier(0.4, 极, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.forecast-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(244, 114, 182, 0.3), transparent);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.forecast-card:hover {
+    transform: translateY(-6px) scale(1.01);
+    box-shadow: 
+        0 20px 40px rgba(0, 0, 0, 0.2),
+        0 8px 16px rgba(0, 0, 0, 0.1);
+    border-color: rgba(244, 114, 182, 0.3);
+}
+
+.forecast-card:hover::before {
+    opacity: 1;
+}
+
+.forecast-controls {
+    background: rgba(51, 65, 85, 0.3);
+    padding: 1.5rem;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    margin-bottom: 2rem;
+}
+
+.forecast-btn {
+    background: var(--gradient-accent);
+    color: white;
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    grid-column: 1 / -1;
+    justify-self: center;
+    margin-top: 1rem;
+}
+
+.forecast-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(244, 114, 182, 0.3);
+}
+
+.forecast-btn:active {
+    transform: translateY(0);
+}
+
+.forecast-results {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.forecast-metrics {
+    background: rgba(51, 65, 85, 0.3);
+    padding: 1.5rem;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.metric-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.metric-item:last-child {
+    border-bottom: none;
+}
+
+.metric-value {
+    font-weight: 700;
+    color: var(--accent-pink);
+    background: var(--gradient-accent);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.radio-items {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.radio-items .RadioItems {
+    display: flex;
+    gap: 1rem;
+}
+
+.radio-items .RadioItems label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 8px;
+    transition: background-color 0.2s ease;
+}
+
+.radio-items .RadioItems label:hover {
+    background: rgba(96, 165, 250, 0.1);
+}
+
+.slider {
+    margin: 1rem 0;
+}
+
+.slider .rc-slider {
+    margin: 0.5rem 0;
+}
+
+.slider .rc-slider-track {
+    background: var(--gradient-accent);
+}
+
+.slider .rc-slider-hand极 {
+    border: 2px solid var(--accent-pink);
+    background: var(--bg-primary);
+    box-shadow: 0 2px 8px rgba(244, 114, 182, 0.3);
+}
+
+.slider .rc-slider-handle:focus {
+    box-shadow: 0 0 0 3px rgba(244, 114, 182, 0.2);
 }
 
 /* ==========================================

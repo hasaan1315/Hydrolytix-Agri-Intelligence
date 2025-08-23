@@ -9,6 +9,7 @@ from components.filters import FilterControls
 from components.kpi_cards import KPICards
 from components.charts.donut_chart import DonutChart
 from components.comparison import YearComparison
+from components.forecasting import Forecasting
 from utils.data_loader import DataLoader
 
 class DashboardLayout:
@@ -20,6 +21,7 @@ class DashboardLayout:
         self.kpi_cards = KPICards()
         self.donut_chart = DonutChart()
         self.year_comparison = YearComparison(data_loader)
+        self.forecasting = Forecasting(data_loader)
     
     def create_layout(self) -> html.Div:
         """Create the main dashboard layout."""
@@ -43,6 +45,11 @@ class DashboardLayout:
                             label="Year Comparison", 
                             value="comparison",
                             children=self._create_comparison_layout()
+                        ),
+                        dcc.Tab(
+                            label="Forecasting",
+                            value="forecasting",
+                            children=self._create_forecasting_layout()
                         )
                     ]
                 )
@@ -55,7 +62,7 @@ class DashboardLayout:
             className="grid",
             children=[
                 # Filter Card
-                self.filter_controls.create_filter_card(),
+                self.filter_controls.create_filter_card("overview"),
                 
                 # KPI Cards Row
                 self.kpi_cards.create_kpi_row(),
@@ -83,9 +90,22 @@ class DashboardLayout:
             className="grid-comparison",
             children=[
                 # Filter Card
-                self.filter_controls.create_filter_card(),
+                self.filter_controls.create_filter_card("comparison"),
                 
                 # Comparison Card
                 self.year_comparison.create_comparison_card()
+            ],
+        )
+    
+    def _create_forecasting_layout(self) -> html.Div:
+        """Create the forecasting tab layout."""
+        return html.Div(
+            className="grid-comparison",
+            children=[
+                # Filter Card
+                self.filter_controls.create_filter_card("forecasting"),
+                
+                # Forecasting Card
+                self.forecasting.create_forecast_card()
             ],
         )

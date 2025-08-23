@@ -14,7 +14,7 @@ class FilterControls:
     def __init__(self, data_loader: DataLoader):
         self.data_loader = data_loader
     
-    def create_filter_card(self) -> html.Div:
+    def create_filter_card(self, id_prefix: str) -> html.Div:
         """Create the filter card component."""
         
         seasons = self.data_loader.get_seasons()
@@ -27,7 +27,7 @@ class FilterControls:
                 
                 html.Label("Season", className="filter-label"),
                 dcc.Dropdown(
-                    id="season-dd",
+                    id=f"{id_prefix}-season-dd",
                     options=[{"label": s, "value": s} for s in seasons],
                     value="All",
                     className="dropdown",
@@ -36,7 +36,7 @@ class FilterControls:
                 
                 html.Label("Year", className="filter-label"),
                 dcc.Dropdown(
-                    id="year-dd",
+                    id=f"{id_prefix}-year-dd",
                     options=[{"label": str(y), "value": y} for y in years],
                     value="All",
                     className="dropdown",

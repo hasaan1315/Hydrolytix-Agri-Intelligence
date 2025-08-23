@@ -14,12 +14,16 @@ from utils.data_loader import DataLoader
 from utils.formatters import Formatters
 from components.layout import DashboardLayout
 from components.comparison import YearComparison
+from components.forecasting import Forecasting
 
 # Initialize data loader
 data_loader = DataLoader("agri_analysis_punjab_clean.csv")
 
 # Initialize comparison component
 year_comparison = YearComparison(data_loader)
+
+# Initialize forecasting component
+forecasting = Forecasting(data_loader)
 
 # Create the app
 app = dash.Dash(__name__, 
@@ -46,7 +50,7 @@ app.layout = dashboard_layout.create_layout()
         Output("trend-fig", "figure"),
         Output("trend-title", "children"),
     ],
-    [Input("season-dd", "value"), Input("year-dd", "value")],
+    [Input("overview-season-dd", "value"), Input("overview-year-dd", "value")],
 )
 def update_dashboard(season, year):
     """Update dashboard based on filter selections."""
@@ -117,7 +121,7 @@ def update_dashboard(season, year):
 
 @app.callback(
     Output("year-comparison-dd", "options"),
-    [Input("season-dd", "value")]
+    [Input("comparison-season-dd", "value")]
 )
 def update_comparison_year_options(season):
     """Update year options for comparison based on season selection."""
@@ -131,7 +135,7 @@ def update_comparison_year_options(season):
         Output("burned-comparison-fig", "figure"),
         Output("trend-comparison-fig", "figure")
     ],
-    [Input("season-dd", "value"), Input("year-comparison-dd", "value")]
+    [Input("comparison-season-dd", "value"), Input("year-comparison-dd", "value")]
 )
 def update_comparison_charts(season, selected_years):
     """Update comparison charts based on season and selected years."""
@@ -164,6 +168,59 @@ def update_comparison_charts(season, selected_years):
             )]
         )
         return empty_fig, empty_fig, empty_fig
+
+@app.callback(
+    [
+        Output("forecast-fig", "figure"),
+        Output("forecast-metrics", "children")
+    ],
+    [
+        Input("forecast-generate-btn", "n_clicks"),
+        Input("forecast-metric-dd", "value"),
+        Input("forecast-periods-slider", "value"),
+        Input("forecast-model-radio", "value"),
+        Input("overview-season-dd", "value")
+    ]
+)
+def generate_forecast(n_clicks, metric, periods, model_type, season):
+    """Generate forecast based on user input."""
+    if n_clicks > 0:
+        historical_data = forecasting.prepare_forecast_data(season, metric)
+        
+        if model_type == 'exponential':
+            forecast_data, metrics = forecasting.exponential_smoothing_forecast(historical_data, periods)
+        else:
+            forecast_data, metrics = forecasting.arima_forecast(historical_data, periods)
+        
+        forecast_fig = forecasting.create_forecast_figure(historical_data, forecast_data, metric, season)
+        
+        metrics_display = [
+            html.H4("Model Performance Metrics", style={"color": "var(--accent-color)", "marginBottom": "1rem"}),
+            html.Div(className="metric-item", children=[
+                html.Span("Mean Absolute Error (MAE):", style={"fontWeight": "600"}),
+                html.Span(f"{Formatters.format_number(metrics.get('mae', 0))} hectares", className="metric-value")
+            ]),
+            html.Div(className="metric-item", children=[
+                html.Span("Root Mean Squared Error (RMSE):", style={"fontWeight": "600"}),
+                html.Span(f"{Formatters.format_number(metrics.get('rmse', 0))} hectares", className="metric-value")
+            ]),
+            html.Div(className="metric-item", children=[
+                html.Span("Model Type:", style={"fontWeight": "600"}),
+                html.Span(metrics.get('model_type', 'Unknown'), className="metric-value")
+            ]),
+            html.Div(
+                style={"marginTop": "1rem", "fontSize": "0.8rem", "color": "var(--text-muted)"},
+                children=[
+                    "MAE: Average error magnitude",
+                    html.Br(),
+                    "RMSE: Emphasizes larger errors"
+                ]
+            )
+        ]
+        
+        return forecast_fig, metrics_display
+    
+    return go.Figure(), []
 
 if __name__ == "__main__":
     app.run(debug=True, port=8050)
