@@ -27,7 +27,12 @@ forecasting = Forecasting(data_loader)
 
 # Create the app
 app = dash.Dash(__name__, 
-                external_stylesheets=["https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"])
+                external_stylesheets=[
+                    "https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap",
+                    "/assets/base.css",
+                    "/assets/components.css",
+                    "/assets/layout.css"
+                ])
 app.title = "Hydrolytix • Agri Intelligence"
 
 # Create layout
