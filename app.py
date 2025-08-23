@@ -179,7 +179,7 @@ def update_comparison_charts(season, selected_years):
         Input("forecast-metric-dd", "value"),
         Input("forecast-periods-slider", "value"),
         Input("forecast-model-radio", "value"),
-        Input("overview-season-dd", "value")
+        Input("forecasting-season-dd", "value")
     ]
 )
 def generate_forecast(n_clicks, metric, periods, model_type, season):

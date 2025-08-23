@@ -17,7 +17,9 @@ class DashboardLayout:
     
     def __init__(self, data_loader: DataLoader):
         self.data_loader = data_loader
-        self.filter_controls = FilterControls(data_loader)
+        self.overview_filter_controls = FilterControls(data_loader)
+        self.comparison_filter_controls = FilterControls(data_loader)
+        self.forecasting_filter_controls = FilterControls(data_loader)
         self.kpi_cards = KPICards()
         self.donut_chart = DonutChart()
         self.year_comparison = YearComparison(data_loader)
@@ -62,7 +64,7 @@ class DashboardLayout:
             className="grid",
             children=[
                 # Filter Card
-                self.filter_controls.create_filter_card("overview"),
+                self.overview_filter_controls.create_filter_card("overview"),
                 
                 # KPI Cards Row
                 self.kpi_cards.create_kpi_row(),
@@ -90,7 +92,7 @@ class DashboardLayout:
             className="grid-comparison",
             children=[
                 # Filter Card
-                self.filter_controls.create_filter_card("comparison"),
+                self.comparison_filter_controls.create_filter_card("comparison"),
                 
                 # Comparison Card
                 self.year_comparison.create_comparison_card()
@@ -103,7 +105,7 @@ class DashboardLayout:
             className="grid-comparison",
             children=[
                 # Filter Card
-                self.filter_controls.create_filter_card("forecasting"),
+                self.forecasting_filter_controls.create_filter_card("forecasting"),
                 
                 # Forecasting Card
                 self.forecasting.create_forecast_card()
