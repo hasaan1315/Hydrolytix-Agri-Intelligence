@@ -10,6 +10,8 @@ from components.kpi_cards import KPICards
 from components.charts.donut_chart import DonutChart
 from components.comparison import YearComparison
 from components.forecasting import Forecasting
+from components.trend_analysis import TrendAnalysis
+from components.export_reports import ExportReports
 from utils.data_loader import DataLoader
 
 class DashboardLayout:
@@ -20,10 +22,14 @@ class DashboardLayout:
         self.overview_filter_controls = FilterControls(data_loader)
         self.comparison_filter_controls = FilterControls(data_loader)
         self.forecasting_filter_controls = FilterControls(data_loader)
+        self.trend_analysis_filter_controls = FilterControls(data_loader)
+        self.export_filter_controls = FilterControls(data_loader)
         self.kpi_cards = KPICards()
         self.donut_chart = DonutChart()
         self.year_comparison = YearComparison(data_loader)
         self.forecasting = Forecasting(data_loader)
+        self.trend_analysis = TrendAnalysis(data_loader)
+        self.export_reports = ExportReports(data_loader)
     
     def create_layout(self) -> html.Div:
         """Create the main dashboard layout."""
@@ -52,6 +58,18 @@ class DashboardLayout:
                         html.Button(
                             "Forecasting",
                             id="forecasting-tab",
+                            className="custom-tab",
+                            n_clicks=0
+                        ),
+                        html.Button(
+                            "Trend Analysis",
+                            id="trend-analysis-tab",
+                            className="custom-tab",
+                            n_clicks=0
+                        ),
+                        html.Button(
+                            "Export & Reports",
+                            id="export-reports-tab",
                             className="custom-tab",
                             n_clicks=0
                         )
@@ -113,5 +131,31 @@ class DashboardLayout:
                 
                 # Forecasting Card
                 self.forecasting.create_forecast_card()
+            ],
+        )
+    
+    def _create_trend_analysis_layout(self) -> html.Div:
+        """Create the trend analysis tab layout."""
+        return html.Div(
+            className="grid-comparison",
+            children=[
+                # Filter Card
+                self.trend_analysis_filter_controls.create_filter_card("trend-analysis"),
+                
+                # Trend Analysis Card
+                self.trend_analysis.create_trend_analysis_card()
+            ],
+        )
+    
+    def _create_export_reports_layout(self) -> html.Div:
+        """Create the export and reports tab layout."""
+        return html.Div(
+            className="grid-comparison",
+            children=[
+                # Filter Card
+                self.export_filter_controls.create_filter_card("export-reports"),
+                
+                # Export & Reports Card
+                self.export_reports.create_export_card()
             ],
         )

@@ -8,6 +8,7 @@ from dash import dcc, html
 from dash.dependencies import Input, Output, State
 import plotly.graph_objects as go
 from datetime import datetime
+import base64
  
 # Import modular components
 from utils.data_loader import DataLoader
@@ -15,6 +16,8 @@ from utils.formatters import Formatters
 from components.layout import DashboardLayout
 from components.comparison import YearComparison
 from components.forecasting import Forecasting
+from components.trend_analysis import TrendAnalysis
+from components.export_reports import ExportReports
 
 # Initialize data loader
 data_loader = DataLoader("agri_analysis_punjab_clean.csv")
@@ -24,6 +27,12 @@ year_comparison = YearComparison(data_loader)
 
 # Initialize forecasting component
 forecasting = Forecasting(data_loader)
+
+# Initialize trend analysis component
+trend_analysis = TrendAnalysis(data_loader)
+
+# Initialize export reports component
+export_reports = ExportReports(data_loader)
 
 # Create the app
 app = dash.Dash(__name__, 
@@ -45,31 +54,39 @@ app.layout = dashboard_layout.create_layout()
     [Output("tab-content", "children"),
      Output("overview-tab", "className"),
      Output("comparison-tab", "className"),
-     Output("forecasting-tab", "className")],
+     Output("forecasting-tab", "className"),
+     Output("trend-analysis-tab", "className"),
+     Output("export-reports-tab", "className")],
     [Input("overview-tab", "n_clicks"),
      Input("comparison-tab", "n_clicks"),
-     Input("forecasting-tab", "n_clicks")],
+     Input("forecasting-tab", "n_clicks"),
+     Input("trend-analysis-tab", "n_clicks"),
+     Input("export-reports-tab", "n_clicks")],
     prevent_initial_call=True
 )
-def switch_tab(overview_clicks, comparison_clicks, forecasting_clicks):
+def switch_tab(overview_clicks, comparison_clicks, forecasting_clicks, trend_analysis_clicks, export_reports_clicks):
     """Switch between tabs based on button clicks."""
     ctx = dash.callback_context
     
     if not ctx.triggered:
-        return dashboard_layout._create_overview_layout(), "custom-tab active", "custom-tab", "custom-tab"
+        return dashboard_layout._create_overview_layout(), "custom-tab active", "custom-tab", "custom-tab", "custom-tab", "custom-tab"
     
     button_id = ctx.triggered[0]['prop_id'].split('.')[0]
     
     if button_id == "overview-tab":
-        return dashboard_layout._create_overview_layout(), "custom-tab active", "custom-tab", "custom-tab"
+        return dashboard_layout._create_overview_layout(), "custom-tab active", "custom-tab", "custom-tab", "custom-tab", "custom-tab"
     elif button_id == "comparison-tab":
-        return dashboard_layout._create_comparison_layout(), "custom-tab", "custom-tab active", "custom-tab"
+        return dashboard_layout._create_comparison_layout(), "custom-tab", "custom-tab active", "custom-tab", "custom-tab", "custom-tab"
     elif button_id == "forecasting-tab":
-        return dashboard_layout._create_forecasting_layout(), "custom-tab", "custom-tab", "custom-tab active"
+        return dashboard_layout._create_forecasting_layout(), "custom-tab", "custom-tab", "custom-tab active", "custom-tab", "custom-tab"
+    elif button_id == "trend-analysis-tab":
+        return dashboard_layout._create_trend_analysis_layout(), "custom-tab", "custom-tab", "custom-tab", "custom-tab active", "custom-tab"
+    elif button_id == "export-reports-tab":
+        return dashboard_layout._create_export_reports_layout(), "custom-tab", "custom-tab", "custom-tab", "custom-tab", "custom-tab active"
     
-    return dashboard_layout._create_overview_layout(), "custom-tab active", "custom-tab", "custom-tab"
+    return dashboard_layout._create_overview_layout(), "custom-tab active", "custom-tab", "custom-tab", "custom-tab", "custom-tab"
 
-# Callbacks
+# Existing Callbacks
 @app.callback(
     [
         Output("kpi-area", "children"),
@@ -256,6 +273,105 @@ def generate_forecast(n_clicks, metric, periods, model_type, season):
         return forecast_fig, metrics_display
     
     return go.Figure(), []
+
+# Callbacks for Trend Analysis
+@app.callback(
+    Output("trend-analysis-fig", "figure"),
+    [Input("trend-analysis-tab", "n_clicks"),
+     Input("trend-metric-dd", "value"),
+     Input("trend-chart-type-dd", "value"),
+     Input("trend-analysis-season-dd", "value")]
+)
+def update_trend_analysis(n_clicks, metric, chart_type, season):
+    """Update trend analysis figure based on selected parameters."""
+    if n_clicks > 0:
+        return trend_analysis.create_trend_figure(season, metric, chart_type)
+    return go.Figure()
+
+@app.callback(
+    Output("trend-stats", "children"),
+    [Input("trend-analysis-tab", "n_clicks"),
+     Input("trend-metric-dd", "value"),
+     Input("trend-analysis-season-dd", "value")]
+)
+def update_trend_statistics(n_clicks, metric, season):
+    """Update trend statistics based on selected parameters."""
+    if n_clicks > 0:
+        return trend_analysis.get_trend_statistics(season, metric)
+    return []
+
+# Callbacks for Export & Reports
+@app.callback(
+    [Output("export-download-link", "children"),
+     Output("export-status", "children"),
+     Output("download-section", "style")],
+    [Input("export-generate-btn", "n_clicks"),
+     Input("export-format-dd", "value"),
+     Input("export-scope-dd", "value"),
+     Input("export-metrics-checklist", "value"),
+     Input("export-reports-season-dd", "value"),
+     Input("export-reports-year-dd", "value")]
+)
+def generate_export(n_clicks, format_type, scope, metrics, season, year):
+    """Generate export based on selected parameters."""
+    print(f"Export callback triggered with n_clicks: {n_clicks}")
+    print(f"Parameters - format: {format_type}, scope: {scope}, metrics: {metrics}, season: {season}, year: {year}")
+    
+    if n_clicks and n_clicks > 0:
+        try:
+            print("Processing export request...")
+            if scope == "current":
+                df = data_loader.filter_data(season, year)
+            elif scope == "all":
+                df = data_loader.df
+            else:
+                # Handle custom range logic if needed
+                df = data_loader.filter_data(season, year)  # Placeholder for custom logic
+            
+            print(f"DataFrame shape: {df.shape}")
+            
+            if df.empty:
+                print("No data available for export")
+                return "", "No data available for export", {"display": "none"}
+            
+            if format_type == "csv":
+                filename = export_reports.get_export_filename(season, year, format_type)
+                # Create a download link using base64 encoding
+                csv_string = df.to_csv(index=False)
+                b64 = base64.b64encode(csv_string.encode()).decode()
+                href = f"data:text/csv;base64,{b64}"
+                download_link = html.A(
+                    f"Download {filename}",
+                    href=href,
+                    download=filename,
+                    className="btn-primary"
+                )
+                print("CSV export ready")
+                return download_link, "CSV export ready for download", {"display": "block"}
+            elif format_type == "pdf":
+                # Generate actual PDF report
+                filename = export_reports.get_export_filename(season, year, format_type)
+                export_data = export_reports.generate_pdf_report(df, season, year)
+                if export_data["error"]:
+                    print(f"PDF generation error: {export_data['error']}")
+                    return "", f"Error: {export_data['error']}", {"display": "none"}
+                
+                # Create download link for PDF
+                download_link = html.A(
+                    f"Download {filename}",
+                    href=export_data["content"],
+                    download=filename,
+                    className="btn-primary"
+                )
+                print("PDF export ready")
+                return download_link, "PDF report ready for download", {"display": "block"}
+        
+        except Exception as e:
+            print(f"Error generating export: {str(e)}")
+            return "", f"Error generating export: {str(e)}", {"display": "none"}
+    
+    print("No export generated (n_clicks <= 0)")
+    return "", "", {"display": "none"}
 
 if __name__ == "__main__":
     app.run(debug=True, port=8050)
