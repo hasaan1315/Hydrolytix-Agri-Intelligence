@@ -321,6 +321,148 @@
 }
 
 /* ==========================================
+   BUTTON STYLES
+   ========================================== */
+.btn-primary {
+    background: var(--gradient-accent);
+    color: white;
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 1rem;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(244, 114, 182, 0.3);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+}
+
+/* ==========================================
+   EXPORT REPORTS COMPONENT
+   ========================================== */
+.export-card {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.export-controls {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    align-items: end;
+}
+
+.export-controls > div {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.export-controls > div:last-child {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: center;
+    margin-top: 1rem;
+}
+
+.download-section {
+    background: rgba(51, 65, 85, 0.3);
+    padding: 1.5rem;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    text-align: center;
+}
+
+.download-title {
+    color: var(--accent-color);
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.download-link {
+    margin: 1rem 0;
+}
+
+.status-message {
+    color: var(--text-muted);
+    font-size: 0.875rem;
+    margin-top: 0.5rem;
+}
+
+.report-preview {
+    background: rgba(51, 65, 85, 0.3);
+    padding: 1.5rem;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.preview-title {
+    color: var(--accent-color);
+    margin-bottom: 1.5rem;
+    font-weight: 600;
+}
+
+.preview-content {
+    margin-top: 1rem;
+}
+
+.record-count {
+    color: var(--text-muted);
+    font-size: 0.875rem;
+    margin-bottom: 1rem;
+    font-style: italic;
+}
+
+.table-container {
+    max-height: 400px;
+    overflow-y: auto;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    background: rgba(51, 65, 85, 0.3);
+}
+
+.data-preview-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+    background: transparent;
+}
+
+.data-preview-table th {
+    background: var(--gradient-primary);
+    color: white;
+    padding: 12px 8px;
+    text-align: left;
+    font-weight: 600;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.data-preview-table td {
+    padding: 8px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--text-primary);
+}
+
+.data-preview-table tr:nth-child(even) {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.data-preview-table tr:hover {
+    background: rgba(96, 165, 250, 0.1);
+}
+
+/* ==========================================
    ENHANCED CHART CARDS
    ========================================== */
 .donut-card {

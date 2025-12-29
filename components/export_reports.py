@@ -258,16 +258,87 @@ class ExportReports:
         except Exception as e:
             return {"content": "", "filename": "", "error": f"PDF generation error: {str(e)}"}
     
-    def _create_report_preview(self, df: pd.DataFrame, season: str, year: str) -> str:
-        """Create HTML preview of the report."""
+    def create_report_preview_components(self, df: pd.DataFrame, season: str, year: str) -> html.Div:
+        """Create Dash components for report preview."""
         stats = self.data_loader.get_summary_stats(season, year)
-        
+
+        # Determine how many records to show
+        total_records = len(df)
+        if total_records <= 20:
+            # Show all records for small datasets
+            preview_df = df
+            record_text = f"Showing all {total_records} records"
+        else:
+            # Show first 15 records for larger datasets with scroll
+            preview_df = df.head(15)
+            record_text = f"Showing first 15 of {total_records} records (scroll for more)"
+
+        # Create table headers
+        headers = [html.Th(col, style={"background": "var(--gradient-primary)", "color": "white", "padding": "12px 8px", "textAlign": "left", "fontWeight": "600", "position": "sticky", "top": "0", "zIndex": "10"}) for col in preview_df.columns]
+
+        # Create table rows
+        rows = []
+        for i, (_, row) in enumerate(preview_df.iterrows()):
+            row_style = {"background": "rgba(255, 255, 255, 0.02)" if i % 2 == 0 else "transparent"}
+            cells = [html.Td(str(val), style={"padding": "8px", "borderBottom": "1px solid rgba(255, 255, 255, 0.1)", "color": "var(--text-primary)"}) for val in row]
+            rows.append(html.Tr(cells, style=row_style))
+
+        return html.Div([
+            html.H3("Agricultural Production Report", style={"color": "var(--accent-color)", "marginBottom": "1rem"}),
+            html.P([html.Strong("Season: ", style={"color": "var(--text-secondary)"}), season if season != "All" else "All Seasons"]),
+            html.P([html.Strong("Year: ", style={"color": "var(--text-secondary)"}), year if year != "All" else "All Years"]),
+
+            html.H4("Summary Statistics", style={"color": "var(--text-secondary)", "margin": "1.5rem 0 0.5rem 0"}),
+
+            html.Table([
+                html.Tr([
+                    html.Th("Metric", style={"background": "rgba(96, 165, 250, 0.1)", "color": "var(--accent-color)", "padding": "0.75rem", "textAlign": "left", "borderBottom": "1px solid rgba(255, 255, 255, 0.1)"}),
+                    html.Th("Value", style={"background": "rgba(96, 165, 250, 0.1)", "color": "var(--accent-color)", "padding": "0.75rem", "textAlign": "left", "borderBottom": "1px solid rgba(255, 255, 255, 0.1)"})
+                ])
+            ] + [
+                html.Tr([
+                    html.Td(metric_name, style={"padding": "0.75rem", "borderBottom": "1px solid rgba(255, 255, 255, 0.1)", "color": "var(--text-primary)"}),
+                    html.Td(metric_value, style={"padding": "0.75rem", "borderBottom": "1px solid rgba(255, 255, 255, 0.1)", "color": "var(--text-primary)"})
+                ]) for metric_name, metric_value in [
+                    ("Total Area under Production", f"{Formatters.format_number(stats['total_area'])} Hac"),
+                    ("Total Burned Area", f"{Formatters.format_number(stats['burned_area'])} Hac"),
+                    ("Total Difference", f"{Formatters.format_number(stats['difference'])} Hac"),
+                    ("Average % Difference", Formatters.format_percentage(stats['pct_avg']))
+                ]
+            ], style={"width": "100%", "borderCollapse": "collapse", "background": "rgba(30, 41, 59, 0.5)", "borderRadius": "8px", "overflow": "hidden"}),
+
+            html.H4("Data Preview", style={"color": "var(--text-secondary)", "margin": "1.5rem 0 0.5rem 0"}),
+            html.P(record_text, className="record-count"),
+            html.Div(
+                html.Table(
+                    [html.Tr(headers)] + rows,
+                    className="data-preview-table"
+                ),
+                className="table-container"
+            )
+        ], className="report-preview-content")
+
+    def _create_report_preview(self, df: pd.DataFrame, season: str, year: str) -> str:
+        """Create HTML preview of the report (legacy method for backward compatibility)."""
+        stats = self.data_loader.get_summary_stats(season, year)
+
+        # Determine how many records to show
+        total_records = len(df)
+        if total_records <= 20:
+            # Show all records for small datasets
+            preview_df = df
+            record_text = f"Showing all {total_records} records"
+        else:
+            # Show first 15 records for larger datasets with scroll
+            preview_df = df.head(15)
+            record_text = f"Showing first 15 of {total_records} records (scroll for more)"
+
         preview_html = f"""
         <div class="report-preview-content">
             <h3>Agricultural Production Report</h3>
             <p><strong>Season:</strong> {season if season != 'All' else 'All Seasons'}</p>
             <p><strong>Year:</strong> {year if year != 'All' else 'All Years'}</p>
-            
+
             <h4>Summary Statistics</h4>
             <table class="report-table">
                 <tr><th>Metric</th><th>Value</th></tr>
@@ -276,20 +347,22 @@ class ExportReports:
                 <tr><td>Total Difference</td><td>{Formatters.format_number(stats['difference'])} Hac</td></tr>
                 <tr><td>Average % Difference</td><td>{Formatters.format_percentage(stats['pct_avg'])}</td></tr>
             </table>
-            
+
             <h4>Data Preview</h4>
-            <p>Showing first 5 records:</p>
-            {df.head().to_html(classes='data-preview', index=False)}
+            <p class="record-count">{record_text}</p>
+            <div class="table-container">
+                {preview_df.to_html(classes='data-preview-table', index=False)}
+            </div>
         </div>
         """
-        
+
         return preview_html
     
     def get_export_filename(self, season: str, year: str, format_type: str) -> str:
         """Generate appropriate filename for export."""
         season_part = season.lower() if season != "All" else "all_seasons"
-        year_part = year.lower() if year != "All" else "all_years"
-        
+        year_part = str(year).lower() if year != "All" else "all_years"
+
         if format_type == "csv":
             return f"agriculture_data_{season_part}_{year_part}.csv"
         else:

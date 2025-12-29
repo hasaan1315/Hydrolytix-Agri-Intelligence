@@ -302,6 +302,29 @@ def update_trend_statistics(n_clicks, metric, season):
 
 # Callbacks for Export & Reports
 @app.callback(
+    Output("report-preview-content", "children"),
+    [Input("export-reports-season-dd", "value"),
+     Input("export-reports-year-dd", "value"),
+     Input("export-metrics-checklist", "value")]
+)
+def update_report_preview(season, year, metrics):
+    """Update report preview based on selected parameters."""
+    try:
+        # Get filtered data
+        df = data_loader.filter_data(season, year)
+
+        if df.empty:
+            return html.Div("No data available for the selected filters.", style={"color": "var(--text-muted)"})
+
+        # Create preview components using the ExportReports component method
+        preview_components = export_reports.create_report_preview_components(df, season, year)
+
+        return preview_components
+
+    except Exception as e:
+        return html.Div(f"Error loading preview: {str(e)}", style={"color": "var(--text-muted)"})
+
+@app.callback(
     [Output("export-download-link", "children"),
      Output("export-status", "children"),
      Output("download-section", "style")],
